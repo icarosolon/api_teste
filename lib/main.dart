@@ -95,14 +95,38 @@ class _HomePageState extends State<HomePage> {
                     title: Text(
                       snapshot.data[index].nome,
                     ),
-                    subtitle: Text(new DateFormat("dd/MM/yyyy", "en_US")
-                        .format(DateTime.parse(snapshot.data[index].dtNasc))),
+                    subtitle: Text(
+                      new DateFormat("dd/MM/yyyy", "en_US").format(
+                        DateTime.parse(snapshot.data[index].dtNasc),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (context) =>
+                                  DetailPage(snapshot.data[index])));
+                    },
                   );
                 },
               );
             }
           },
         ),
+      ),
+    );
+  }
+}
+
+class DetailPage extends StatelessWidget {
+  final Post post;
+
+  DetailPage(this.post);
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(post.nome),
       ),
     );
   }
