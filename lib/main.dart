@@ -5,6 +5,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'models/Post.dart';
 import 'package:intl/intl.dart';
+import 'package:toast/toast.dart';
 
 void main() => runApp(MyApp());
 
@@ -101,7 +102,6 @@ class _HomePageState extends State<HomePage> {
                 if (snapshot.data == null) {
                   return CircularProgressIndicator();
                 } else {
-                  final f = new DateFormat('yyyy-MM-dd hh:mm');
                   return ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (BuildContext context, int index) {
@@ -116,9 +116,10 @@ class _HomePageState extends State<HomePage> {
                           snapshot.data[index].nome,
                         ),
                         subtitle: Text(
-                          new DateFormat("dd/MM/yyyy", "en_US").format(
-                            DateTime.parse(snapshot.data[index].dtNasc),
-                          ),
+                          "Dt. Nasc.: " +
+                              new DateFormat("dd - MM - yyyy", "en_US").format(
+                                DateTime.parse(snapshot.data[index].dtNasc),
+                              ),
                         ),
                         onTap: () {
                           Navigator.push(
