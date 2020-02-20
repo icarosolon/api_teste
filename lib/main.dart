@@ -1,3 +1,4 @@
+import 'package:api_flutter/pages/detail.page.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dart:convert';
@@ -40,6 +41,22 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
+
+  @override
+  void initState() {
+    super.initState();
+    atualizaLista();
+  }
+
+  Future atualizaLista() async {
+    refreshKey.currentState?.show(atTop: false);
+    await Future.delayed(Duration(seconds: 2));
+    setState(() {
+      this._getPost();
+    });
+  }
+
   Future<List<Post>> _getPost() async {
     final response =
         await http.get('http://192.168.100.13/MeuProjeto/public/api/mcf');
@@ -73,61 +90,51 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Consumindo API'),
-      ),
-      body: Center(
-        child: FutureBuilder(
-          future: _getPost(),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.data == null) {
-              return CircularProgressIndicator();
-            } else {
-              final f = new DateFormat('yyyy-MM-dd hh:mm');
-              return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundImage: NetworkImage(
-                          "https://image.freepik.com/vetores-gratis/perfil-de-avatar-de-homem-no-icone-redondo_24640-14044.jpg"),
-                    ),
-                    title: Text(
-                      snapshot.data[index].nome,
-                    ),
-                    subtitle: Text(
-                      new DateFormat("dd/MM/yyyy", "en_US").format(
-                        DateTime.parse(snapshot.data[index].dtNasc),
-                      ),
-                    ),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          new MaterialPageRoute(
-                              builder: (context) =>
-                                  DetailPage(snapshot.data[index])));
+        appBar: AppBar(
+          title: Text('Consumindo API'),
+        ),
+        body: RefreshIndicator(
+          child: Center(
+            child: FutureBuilder(
+              future: _getPost(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.data == null) {
+                  return CircularProgressIndicator();
+                } else {
+                  final f = new DateFormat('yyyy-MM-dd hh:mm');
+                  return ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return ListTile(
+                        leading: CircleAvatar(
+                            backgroundImage: snapshot.data[index].sexo != 'F'
+                                ? NetworkImage(
+                                    "https://i.pinimg.com/280x280_RS/fe/6f/d7/fe6fd7e4f16fae7cea0a1a096c64029b.jpg")
+                                : NetworkImage(
+                                    "https://www.instagram.com/p/B7d8GZnBv6P/media/?size=l")),
+                        title: Text(
+                          snapshot.data[index].nome,
+                        ),
+                        subtitle: Text(
+                          new DateFormat("dd/MM/yyyy", "en_US").format(
+                            DateTime.parse(snapshot.data[index].dtNasc),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailPage(snapshot.data[index])));
+                        },
+                      );
                     },
                   );
-                },
-              );
-            }
-          },
-        ),
-      ),
-    );
-  }
-}
-
-class DetailPage extends StatelessWidget {
-  final Post post;
-
-  DetailPage(this.post);
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(post.nome),
-      ),
-    );
+                }
+              },
+            ),
+          ),
+          onRefresh: atualizaLista,
+        ));
   }
 }
