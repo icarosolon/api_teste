@@ -60,7 +60,8 @@ class _HomePageState extends State<HomePage> {
 
   Future<List<Post>> _getPost() async {
     final response =
-        await http.get('http://192.168.100.13/MeuProjeto/public/api/mcf');
+        //await http.get('http://192.168.100.13/MeuProjeto/public/api/mcf');
+        await http.get('http://10.0.0.95/MeuProjeto/public/api/mcf');
 
     if (response.statusCode == 200) {
       var jsonData = json.decode(response.body);
